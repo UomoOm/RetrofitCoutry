@@ -1,33 +1,39 @@
 package om.studies.om.a1810;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-import static android.R.id.list;
-
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView list;
+    RecyclerView recyclerView;
+    RecyclerViewAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        list = (RecyclerView) findViewById(R.id.activity_main);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_main);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        list.setLayoutManager(layoutManager);
-
-
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new RecyclerViewAdapter(countries, this);
+        adapter.setListener(new RecyclerViewAdapter.OnRecyclerItemClickListener() {
+            @Override
+            public void onItemClickListener(Country item, int position) {
+                Toast.makeText(MainActivity.this, (CharSequence) item, Toast.LENGTH_SHORT).show();
+            }
+        });
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -37,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void success(List<Country> countries, Response response) {
 
-                list.setAdapter(new RecyclerViewAdapter(countries, MainActivity.this));
+                recyclerView.setAdapter(new RecyclerViewAdapter(countries, MainActivity.this));
 
                 Toast.makeText(MainActivity.this, countries.get(0).name, Toast.LENGTH_SHORT).show();
 

@@ -12,6 +12,11 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     Context context;
     List<Country> countryList;
+    private OnRecyclerItemClickListener listener;
+
+    public interface OnRecyclerItemClickListener {
+        void onItemClickListener(Country item, int position);
+    }
 
 
     public RecyclerViewAdapter(List<Country> countryList, Context context) {
@@ -21,15 +26,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.list_item, viewGroup, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.name.setText(countryList.get(position).name);
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        viewHolder.name.setText((CharSequence) countryList.get(i));
     }
 
     @Override
@@ -37,12 +42,29 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return countryList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView name;
+    public void setListener(OnRecyclerItemClickListener listener) {
+        this.listener = listener;
+    }
 
-        public ViewHolder(View item) {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        TextView name;
+
+        ViewHolder(View item) {
             super(item);
-            name = (TextView) item.findViewById(R.id.textView);
+            name = (TextView) item.findViewById(R.id.list_item);
+            item.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (listener != null) {
+                int position = getAdapterPosition();
+                listener.onItemClickListener(countryList.get(position), position);
+            } else {
+                throw new RuntimeException(
+                        "You must init OnRecyclerItemClickListener by calling setListener() method.");
+            }
         }
     }
 }

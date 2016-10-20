@@ -7,4 +7,7 @@ package om.studies.om.a1810;
 public class Country {
 
     public String name;
+    public String country;
+
+
 }
